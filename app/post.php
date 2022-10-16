@@ -4,7 +4,17 @@ session_start();
 //connexion à la base de données
 $bdd = new PDO("mysql:host=database;dbname=post", "root", "password");
 
+if(isset($_POST['deconnexion'])) {
+    header('location: inscription.php');
+}
+
+$recMess = $bdd->query('SELECT * FROM message');
+while($chat = $recMess->fetch()){
+    echo ("<strong>" . $chat['id_utilisateur']."</strong>" . ': ' . $chat['message'] ."<br>");
+}
+
 //envoyer les messages
+
 if(isset($_POST['envoyer'])){
     if(!empty($_POST['message'])){
         $message = nl2br(htmlspecialchars($_POST['message']));
@@ -12,22 +22,18 @@ if(isset($_POST['envoyer'])){
 
         $insert = $bdd->prepare('INSERT INTO message(message, id_utilisateur) VALUES(?, ?)');
         $insert->execute(array($message, $pseudo));
+        echo ("<strong>" . $pseudo."</strong>" . ': ' . $message ."<br>");
+
     }else{
         echo "écrivez votre message ";
     }
 
-    $recMess = $bdd->query('SELECT * FROM message WHERE id_utilisateur = id_utilisateur');
-    while($chat = $recMess->fetch()){
-        echo ("<strong>" . $chat['id_utilisateur']."</strong>" . ': ' . $chat['message'] ."<br>");
 
-    }
 
 }
 
 //revenir à l'écran connexion/inscription
-if(isset($_POST['deconnexion'])) {
-    header('location: inscription.php');
-}
+
 ?>
 
 <!doctype html>
